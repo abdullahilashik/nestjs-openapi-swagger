@@ -1,0 +1,65 @@
+services:
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=production
+  #     - DB_HOST=postgres
+  #     - DB_PORT=5432
+  #     - DB_USER=postgres_user
+  #     - DB_PASSWORD=postgres_password
+  #     - DB_NAME=postgres_database
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   networks:
+  #     - nestnet
+
+  postgres:
+    image: postgres:15    
+    restart: always
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: postgres_database
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres_user -d postgres_database"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    ports:
+      - "5432:5432"
+    networks:
+      - nestnet
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: mysql_db
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: rootpassword
+  #     MYSQL_DATABASE: exampledb
+  #     MYSQL_USER: user
+  #     MYSQL_PASSWORD: userpassword
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - db_data:/var/lib/mysql
+  #   networks:
+  #     - nestnet
+
+volumes:
+  # db_data:
+  postgres-data:
+
+networks:
+  nestnet:
+    driver: bridge
